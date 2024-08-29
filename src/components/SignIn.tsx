@@ -13,12 +13,13 @@ import {
   signInWithPopup,
   UserCredential,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import firebaseServices from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { RiShieldKeyholeFill } from "react-icons/ri";
 
 export const SignIn = () => {
+  const {auth} = firebaseServices;
   const signInWithGoogle = (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);

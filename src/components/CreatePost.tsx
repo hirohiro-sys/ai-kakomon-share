@@ -1,11 +1,12 @@
 import React from "react";
 import { SignIn } from "./SignIn";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
+import firebaseServices from "../firebase";
 import { Button } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 
 export const CreatePost = () => {
+  const { auth } = firebaseServices;
   const [user] = useAuthState(auth);
   return <>{user ? (
   <>
