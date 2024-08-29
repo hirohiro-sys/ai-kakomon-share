@@ -2,8 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-
-const firebaseConfig = initializeApp({
+// Firebase の設定
+const firebaseConfig = {
   apiKey: import.meta.env.VITE_REACT_APP_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_REACT_APP_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_REACT_APP_FIREBASE_PROJECT_ID,
@@ -11,12 +11,12 @@ const firebaseConfig = initializeApp({
   messagingSenderId: import.meta.env.VITE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_REACT_APP_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_REACT_APP_FIREBASE_MEASUREMENT_ID
-});
+};
 
-
-const auth = getAuth(firebaseConfig);
-const db = getFirestore(firebaseConfig);
-
+const app = initializeApp(firebaseConfig);
+// console.log(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 const firebaseServices = { auth, db };
 
 export default firebaseServices;
