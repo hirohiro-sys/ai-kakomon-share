@@ -18,17 +18,27 @@ import firebaseServices from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { FaDoorOpen } from "react-icons/fa6";
-// import { RiShieldKeyholeFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export const SignIn = () => {
   const { auth } = firebaseServices;
+  const navigate = useNavigate();
   const signInWithGoogle = (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    return signInWithPopup(auth, provider).then((result) => {
+      // サインイン成功後にリダイレクト
+      navigate("/");
+      return result;
+    });
   };
+  
   const signInWithGithub = (): Promise<UserCredential> => {
     const provider = new GithubAuthProvider();
-    return signInWithPopup(auth, provider);
+    return signInWithPopup(auth, provider).then((result) => {
+      // サインイン成功後にリダイレクト
+      navigate("/");
+      return result;
+    });
   };
   return (
     <>
@@ -48,7 +58,6 @@ export const SignIn = () => {
         <Card p="10" mb="20px" maxW="lg" boxShadow="lg">
           <CardHeader>
             <Stack align="center">
-              {/* <RiShieldKeyholeFill size="30px" /> */}
               <FaDoorOpen size="30px" />
 
               <Heading size="lg">Sign in</Heading>

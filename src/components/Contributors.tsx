@@ -2,6 +2,6 @@ import React from 'react'
 
 export const Contributors = () => {
   return (
-    <div>Contributors</div>
+    <div>ここに持ってる過去問情報を登録</div>
   )
 }
