@@ -135,9 +135,13 @@ const SidebarContent = ({
         }}
         ml="70px"
         mt="600px"
-        color="red.400"
-        bgColor="white"
+        color="white"
+        bgColor="red.400"
         border="2px"
+        _hover={{
+          bgColor: "white",
+          color: "red.400",
+        }}
       >
         サインアウト
         <FaSignOutAlt />
@@ -167,9 +171,12 @@ const NavItem = ({ icon, children, onClick, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
+        transition="transform 0.2s ease, box-shadow 0.2s ease"
         _hover={{
-          bg: "cyan.400",
-          color: "white",
+          bg: "rgba(172, 161, 161, 0.2)",
+          transform: "scale(1.03)",
+
+          color: "black",
         }}
         {...rest}
       >
@@ -178,7 +185,7 @@ const NavItem = ({ icon, children, onClick, ...rest }: NavItemProps) => {
             mr="4"
             fontSize="16"
             _groupHover={{
-              color: "white",
+              color: "black",
             }}
             as={icon}
           />

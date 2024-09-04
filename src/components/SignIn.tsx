@@ -5,8 +5,10 @@ import {
   CardBody,
   CardHeader,
   Center,
+  Divider,
   Heading,
   Stack,
+  Text,
 } from "@chakra-ui/react";
 import {
   GoogleAuthProvider,
@@ -31,7 +33,7 @@ export const SignIn = () => {
       return result;
     });
   };
-  
+
   const signInWithGithub = (): Promise<UserCredential> => {
     const provider = new GithubAuthProvider();
     return signInWithPopup(auth, provider).then((result) => {
@@ -61,8 +63,12 @@ export const SignIn = () => {
               <FaDoorOpen size="30px" />
 
               <Heading size="lg">Sign in</Heading>
+              <Text mt="4" textAlign="center" fontSize="sm">
+                Please sign in with your Google or GitHub account！
+              </Text>
             </Stack>
           </CardHeader>
+          <Divider borderColor="gray.400"/>
           <CardBody>
             <Stack>
               <Button onClick={signInWithGoogle} fontSize="20px" p="25px">
