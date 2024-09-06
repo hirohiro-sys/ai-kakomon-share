@@ -1,6 +1,6 @@
 import { Box, Spinner } from "@chakra-ui/react";
 import SimpleSidebar from "./MainLayout";
-import { SignIn } from "../SignIn";
+import  { SignIn } from "../SignIn";
 import firebaseServices from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 

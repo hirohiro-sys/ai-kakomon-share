@@ -81,6 +81,7 @@ export default function SimpleSidebar() {
         {/* ここで各コンポーネントの中身を表示 */}
       </Box>
     </Box>
+
   );
 }
 
@@ -109,8 +110,20 @@ const SidebarContent = ({
       h="full"
       {...rest}
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+      <Flex
+        h="20"
+        alignItems="center"
+        justifyContent="space-between"
+        bgColor="teal.100"
+      >
+        <Text
+          fontSize="2xl"
+          fontFamily="monospace"
+          fontWeight="bold"
+          m="auto"
+          color="white"
+          textShadow="1px 1px 2px rgba(0, 0, 0, 0.7)"
+        >
           KakomonShare
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
@@ -119,6 +132,7 @@ const SidebarContent = ({
         <NavItem
           key={link.name}
           icon={link.icon}
+          mt="10px"
           onClick={() => {
             navigate(link.path);
             onClose();
@@ -134,7 +148,7 @@ const SidebarContent = ({
           });
         }}
         ml="70px"
-        mt="600px"
+        mt="570px"
         color="white"
         bgColor="red.400"
         border="2px"

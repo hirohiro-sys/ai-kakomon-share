@@ -24,11 +24,13 @@ import {
   Textarea,
   Box,
   List,
+  Divider,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Post } from "../domain/kakomon-share";
 import { addKakomonPost, getKakomonPosts } from "../lib/supabasefunctions";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { BiMessageRoundedDetail } from "react-icons/bi";
 
 type formInputs = {
   title: string;
@@ -131,28 +133,42 @@ export const CreatePost = () => {
                   {errors.description && errors.description.message}
                 </FormErrorMessage>
               </FormControl>
-                <Button colorScheme="teal" type="submit" w="100%" mt="20px" mb="10px">
-                  投稿する
-                </Button>
+              <Button
+                colorScheme="teal"
+                type="submit"
+                w="100%"
+                mt="20px"
+                mb="10px"
+              >
+                投稿する
+              </Button>
             </form>
           </ModalBody>
         </ModalContent>
       </Modal>
-      {/* chatのモーダル表示 */}
+
+      {/* chatのモーダル */}
       <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW="600px">
           <ModalHeader>掲示板</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {selectedPost && (
               <>
                 <Box mb="4">
-                  <Heading size="md" mb="2">過去問詳細</Heading>
+                  <Heading size="md" mb="2">
+                    投稿者: {selectedPost.name}
+                  </Heading>
+
+                  <Heading size="md" mb="2">
+                    過去問詳細
+                  </Heading>
                   <Box p="4" borderWidth="1px" borderRadius="md" bg="gray.50">
                     {selectedPost.description}
                   </Box>
                 </Box>
+                <Divider borderColor="gray.400"/>
                 {/* チャット機能 */}
                 <Box>
                   <List spacing={3} mb="4">
@@ -160,11 +176,14 @@ export const CreatePost = () => {
                   </List>
                   <FormControl>
                     <FormLabel htmlFor="chatMessage" fontWeight="bold">
-                      メッセージ
+                      返信
                     </FormLabel>
-                    <Input id="chatMessage" placeholder="メッセージを入力してください。" />
+                    <Textarea
+                      id="chatMessage"
+                      placeholder="メッセージを入力してください。"
+                    />
                     <Button colorScheme="teal" mt="2">
-                      送信
+                      コメントする
                     </Button>
                   </FormControl>
                 </Box>
@@ -173,19 +192,27 @@ export const CreatePost = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
+
       {/* 以下過去問募集のメインページ */}
       <Center mb="30px">
         <Stack>
-          <Heading>過去問募集ページ</Heading>
+ 
+            <Heading
+              fontFamily="serif"
+              fontSize="50px"
+              textAlign="center"
+            >
+              過去問募集ページ
+            </Heading>
+          
           <Button
-            bgColor="teal.400"
+            bgColor="blackAlpha.500"
             color="white"
             border="2px"
-            borderColor="gray.100"
             _hover={{
               bgColor: "white",
-              color: "teal.400",
-              borderColor: "teal.400",
+              color: "blackAlpha.500",
+              borderColor: "blackAlpha.500",
             }}
             onClick={addPostModal.onOpen}
           >
@@ -194,7 +221,7 @@ export const CreatePost = () => {
         </Stack>
       </Center>
       <TableContainer>
-        <Table variant="simple" size="lg" colorScheme="blackAlpha">
+        <Table variant="simple" size="sm" colorScheme="blackAlpha">
           <Thead>
             <Tr>
               <Th fontWeight="bold" fontSize="lg">
@@ -218,8 +245,23 @@ export const CreatePost = () => {
                   {kakomonPost.description}
                 </Td>
                 <Td>
-                  <Button bgColor="gray.300" onClick={()=>handleChatOpen(kakomonPost)}>
+                  <Button
+                    bgColor="gray.500"
+                    color="white"
+                    border="2px"
+                    borderColor="gray.500"
+                    _hover={{
+                      bgColor: "white",
+                      color: "black",
+                      borderColor: "gray.500",
+                    }}
+                    onClick={() => handleChatOpen(kakomonPost)}
+                  >
                     詳細
+                    <BiMessageRoundedDetail
+                      size="20px"
+                      style={{ marginLeft: "8px" }}
+                    />
                   </Button>
                 </Td>
               </Tr>
