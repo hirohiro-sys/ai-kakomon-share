@@ -25,12 +25,21 @@ import {
   Box,
   List,
   Divider,
+  Spinner,
+  ListItem,
+  Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Post } from "../domain/kakomon-share";
-import { addKakomonPost, getKakomonPosts } from "../lib/supabasefunctions";
+import { Post, Comment } from "../domain/kakomon-share";
+import {
+  addKakomonPost,
+  addKakomonPostComment,
+  getKakomonPostComments,
+  getKakomonPosts,
+} from "../lib/supabasefunctions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { BiMessageRoundedDetail } from "react-icons/bi";
+import { IoSend } from "react-icons/io5";
 
 type formInputs = {
   title: string;
@@ -42,6 +51,9 @@ export const CreatePost = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [kakomonPosts, setKakomonPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [postComments, setPostComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState("");
+
   const addPostModal = useDisclosure();
   const chatModal = useDisclosure();
 
@@ -52,6 +64,7 @@ export const CreatePost = () => {
     formState: { errors },
   } = useForm<formInputs>();
 
+  // 過去問の募集投稿をする関数
   const onClickAddKakomonPost: SubmitHandler<formInputs> = async (data) => {
     await addKakomonPost(data.title, data.name, data.description);
     const newKakomonPosts = await getKakomonPosts();
@@ -59,11 +72,15 @@ export const CreatePost = () => {
     reset({ title: "", name: "", description: "" });
     addPostModal.onClose();
   };
-  const handleChatOpen = (post: Post) => {
+  // 過去問の募集投稿の内容を取得しモーダルを開く関数
+  const handleChatOpen = async (post: Post) => {
     setSelectedPost(post);
+    const comments = await getKakomonPostComments(post.title);
+    setPostComments(comments);
     chatModal.onOpen();
   };
 
+  // 過去問募集投稿を取得
   useEffect(() => {
     const fetchKakomonPosts = async () => {
       setIsLoading(true);
@@ -74,8 +91,25 @@ export const CreatePost = () => {
     fetchKakomonPosts();
   }, []);
 
+  // 過去問募集投稿に対するコメントを追加
+  const onClickAddComment = async () => {
+    if (selectedPost && commentText) {
+      await addKakomonPostComment(selectedPost.title, commentText);
+      const comments = await getKakomonPostComments(selectedPost.title);
+      setPostComments(comments);
+      setCommentText("");
+    }
+  };
+
   if (isLoading) {
-    return <div>ローディング中</div>;
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+    >
+      <Spinner size="xl" />
+    </Box>;
   }
 
   return (
@@ -149,70 +183,89 @@ export const CreatePost = () => {
 
       {/* chatのモーダル */}
       <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose}>
-        <ModalOverlay />
-        <ModalContent maxW="600px">
-          <ModalHeader>掲示板</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {selectedPost && (
-              <>
-                <Box mb="4">
-                  <Heading size="md" mb="2">
-                    投稿者: {selectedPost.name}
-                  </Heading>
+  <ModalOverlay />
+  <ModalContent maxW="700px">
+    <ModalCloseButton />
+    <ModalBody>
+      {selectedPost && (
+        <>
+          <Box mb="4">
+            <Heading size="md" mb="2">
+              投稿者: {selectedPost.name}
+            </Heading>
+            <Heading size="md" mb="2">
+              過去問募集詳細
+            </Heading>
+            <Box p="4" borderWidth="1px" borderRadius="md" bg="gray.100">
+              {selectedPost.description}
+            </Box>
+          </Box>
+          <Box>
+            <Heading size="sm" mb="3">コメント一覧</Heading>
+            <List spacing={4} mb="4">
+              {postComments.length === 0 ? (
+                <ListItem>コメントはまだありません。</ListItem>
+              ) : (
+                postComments.map((comment) => (
+                  <ListItem
+                    key={comment.created_at.toString()}
+                    p="3"
+                  >
+                    {comment.comment}
+                  </ListItem>
+                ))
+              )}
+            </List>
+            <Divider borderColor="gray.400" mb="4" />
 
-                  <Heading size="md" mb="2">
-                    過去問詳細
-                  </Heading>
-                  <Box p="4" borderWidth="1px" borderRadius="md" bg="gray.50">
-                    {selectedPost.description}
-                  </Box>
-                </Box>
-                <Divider borderColor="gray.400"/>
-                {/* チャット機能 */}
-                <Box>
-                  <List spacing={3} mb="4">
-                    {/* ここにメッセージリストを表示 */}
-                  </List>
-                  <FormControl>
-                    <FormLabel htmlFor="chatMessage" fontWeight="bold">
-                      返信
-                    </FormLabel>
-                    <Textarea
-                      id="chatMessage"
-                      placeholder="メッセージを入力してください。"
-                    />
-                    <Button colorScheme="teal" mt="2">
-                      コメントする
-                    </Button>
-                  </FormControl>
-                </Box>
-              </>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+            <Box mt="4">
+              <FormControl>
+                <FormLabel htmlFor="chatMessage" fontWeight="bold">
+                  返信する
+                </FormLabel>
+                <Flex align="center" gap="2">
+                  <Textarea
+                    id="chatMessage"
+                    placeholder="メッセージを入力してください。"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    flex="1"
+                    height="40px"
+                  />
+                  <Button colorScheme="teal" onClick={onClickAddComment} height="40px">
+                    <IoSend />
+                  </Button>
+                </Flex>
+              </FormControl>
+            </Box>
+          </Box>
+        </>
+      )}
+    </ModalBody>
+  </ModalContent>
+</Modal>
+
 
       {/* 以下過去問募集のメインページ */}
       <Center mb="30px">
         <Stack>
- 
-            <Heading
-              fontFamily="serif"
-              fontSize="50px"
-              textAlign="center"
-            >
-              過去問募集ページ
-            </Heading>
-          
+          <Heading
+            fontFamily="serif"
+            fontSize="50px"
+            textAlign="center"
+            textShadow="2px 2px 4px rgba(0, 0, 0, 0.3)"
+          >
+            過去問募集ページ
+          </Heading>
+
           <Button
-            bgColor="blackAlpha.500"
+            bgColor="blackAlpha.600"
             color="white"
             border="2px"
             _hover={{
               bgColor: "white",
-              color: "blackAlpha.500",
-              borderColor: "blackAlpha.500",
+              color: "blackAlpha.600",
+              borderColor: "blackAlpha.600",
             }}
             onClick={addPostModal.onOpen}
           >

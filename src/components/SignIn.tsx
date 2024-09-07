@@ -45,6 +45,7 @@ export const SignIn = () => {
   return (
     <>
       <Center h="100vh" position="relative" overflow="hidden">
+        {/* 別のやり方で画像表示できる気がする(chakraの公式docみる) */}
         <Box
           position="absolute"
           top="0"

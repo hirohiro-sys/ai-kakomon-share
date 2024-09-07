@@ -81,7 +81,6 @@ export default function SimpleSidebar() {
         {/* ここで各コンポーネントの中身を表示 */}
       </Box>
     </Box>
-
   );
 }
 
@@ -116,6 +115,7 @@ const SidebarContent = ({
         justifyContent="space-between"
         bgColor="teal.100"
       >
+        
         <Text
           fontSize="2xl"
           fontFamily="monospace"
