@@ -19,12 +19,12 @@ export const addKakomonPost = async (title:string,name: string,description: stri
 export const getKakomonPostComments = async (title:string) => {
     const comments = await supabase.from("kakomon_comment").select("*").eq("title",title);
     const commentsData = comments.data!.map((comment)=>{
-        return new Comment(comment.user_id,comment.title,comment.comment,comment.created_at);
+        return new Comment(comment.user_id,comment.title,comment.comment,comment.name,comment.created_at);
     });
     return commentsData;
 }
 
 // 過去問募集投稿に対してのコメントを追加する関数
-export const addKakomonPostComment = async (title:string,comment:string) => {
-    await supabase.from("kakomon_comment").insert({title,comment});
+export const addKakomonPostComment = async (title:string,name: string,comment:string) => {
+    await supabase.from("kakomon_comment").insert({title,name,comment});
 }

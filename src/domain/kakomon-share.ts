@@ -5,5 +5,5 @@ export class Post {
 
 // 過去問の募集投稿のコメントの型を定義
 export class Comment {
-    constructor(public user_id: string, public title: string,public comment: string,public created_at:string) {}
+    constructor(public user_id: string, public title: string,public comment: string,public name: string,public created_at:string) {}
 }

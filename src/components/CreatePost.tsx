@@ -28,6 +28,7 @@ import {
   Spinner,
   ListItem,
   Flex,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Post, Comment } from "../domain/kakomon-share";
@@ -52,6 +53,7 @@ export const CreatePost = () => {
   const [kakomonPosts, setKakomonPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [postComments, setPostComments] = useState<Comment[]>([]);
+  const [commentName, setCommentName] = useState("");
   const [commentText, setCommentText] = useState("");
 
   const addPostModal = useDisclosure();
@@ -93,11 +95,12 @@ export const CreatePost = () => {
 
   // 過去問募集投稿に対するコメントを追加
   const onClickAddComment = async () => {
-    if (selectedPost && commentText) {
-      await addKakomonPostComment(selectedPost.title, commentText);
+    if (selectedPost && commentText && commentName) {
+      await addKakomonPostComment(selectedPost.title, commentName, commentText);
       const comments = await getKakomonPostComments(selectedPost.title);
       setPostComments(comments);
       setCommentText("");
+      setCommentName("");
     }
   };
 
@@ -183,68 +186,102 @@ export const CreatePost = () => {
 
       {/* chatのモーダル */}
       <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose}>
-  <ModalOverlay />
-  <ModalContent maxW="700px">
-    <ModalCloseButton />
-    <ModalBody>
-      {selectedPost && (
-        <>
-          <Box mb="4">
-            <Heading size="md" mb="2">
-              投稿者: {selectedPost.name}
-            </Heading>
-            <Heading size="md" mb="2">
-              過去問募集詳細
-            </Heading>
-            <Box p="4" borderWidth="1px" borderRadius="md" bg="gray.100">
-              {selectedPost.description}
-            </Box>
-          </Box>
-          <Box>
-            <Heading size="sm" mb="3">コメント一覧</Heading>
-            <List spacing={4} mb="4">
-              {postComments.length === 0 ? (
-                <ListItem>コメントはまだありません。</ListItem>
-              ) : (
-                postComments.map((comment) => (
-                  <ListItem
-                    key={comment.created_at.toString()}
-                    p="3"
-                  >
-                    {comment.comment}
-                  </ListItem>
-                ))
-              )}
-            </List>
-            <Divider borderColor="gray.400" mb="4" />
+        <ModalOverlay />
+        <ModalContent maxW="700px">
+          <ModalCloseButton />
+          <ModalBody>
+            {selectedPost && (
+              <>
+                <Box mb="4">
+                  <Heading size="md" mb="2">
+                    投稿者: {selectedPost.name}
+                  </Heading>
+                  <Heading size="md" mb="2">
+                    過去問募集詳細
+                  </Heading>
+                  <Box p="4" borderWidth="1px" borderRadius="md" bg="gray.100">
+                    {selectedPost.description}
+                  </Box>
+                </Box>
+                <Box>
+                  <Heading size="sm" mb="3">
+                    コメント一覧
+                  </Heading>
+                  <List spacing={4} mb="4">
+                    {postComments.length === 0 ? (
+                      <ListItem p="3" textAlign="center" color="gray.600">
+                        コメントはまだありません。
+                      </ListItem>
+                    ) : (
+                      postComments.map((comment) => (
+                        <ListItem
+                          key={comment.created_at.toString()}
+                          p="3"
+                          borderWidth="1px"
+                          borderRadius="md"
+                          bg="gray.50"
+                          boxShadow="md"
+                        >
+                          <Text fontWeight="bold">{comment.comment}</Text>
+                          <Text fontSize="sm" color="gray.500" mt="1">
+                            by {comment.name}
+                            {comment.name === selectedPost.name ? (
+                              <Text
+                                as="span"
+                                fontWeight="bold"
+                                color="teal.500"
+                              >
+                                {" "}
+                                (投稿主)
+                              </Text>
+                            ) : (
+                              ""
+                            )}
+                          </Text>
+                        </ListItem>
+                      ))
+                    )}
+                  </List>
 
-            <Box mt="4">
-              <FormControl>
-                <FormLabel htmlFor="chatMessage" fontWeight="bold">
-                  返信する
-                </FormLabel>
-                <Flex align="center" gap="2">
-                  <Textarea
-                    id="chatMessage"
-                    placeholder="メッセージを入力してください。"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    flex="1"
-                    height="40px"
-                  />
-                  <Button colorScheme="teal" onClick={onClickAddComment} height="40px">
-                    <IoSend />
-                  </Button>
-                </Flex>
-              </FormControl>
-            </Box>
-          </Box>
-        </>
-      )}
-    </ModalBody>
-  </ModalContent>
-</Modal>
+                  <Divider borderColor="gray.400" mb="4" />
 
+                  <Box mt="4">
+                    <FormControl>
+                      <FormLabel htmlFor="chatMessage" fontWeight="bold">
+                        返信する
+                      </FormLabel>
+                      <Input
+                        placeholder="お名前を入力してください。"
+                        value={commentName}
+                        onChange={(e) => setCommentName(e.target.value)}
+                        width="91.5%"
+                        mb="3"
+                      />
+                      <Flex align="center" gap="2">
+                        <Textarea
+                          id="chatMessage"
+                          placeholder="メッセージを入力してください。"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          flex="1"
+                          height="40px"
+                        />
+                        <Button
+                          colorScheme="teal"
+                          onClick={onClickAddComment}
+                          mb="-9"
+                        >
+                          <IoSend />
+                        </Button>
+                      </Flex>
+                    </FormControl>
+                  </Box>
+                </Box>
+              </>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
       {/* 以下過去問募集のメインページ */}
       <Center mb="30px">
@@ -322,6 +359,18 @@ export const CreatePost = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      <Box
+        as="footer"
+        bg="gray.50"
+        color="blackAlpha.700"
+        py="4"
+        textAlign="center"
+        mt="auto"
+      >
+        <Text mb="2">
+          <i>© AIソフトウェア学部 過去問募集ページ</i>
+        </Text>
+      </Box>
     </>
   );
 };
