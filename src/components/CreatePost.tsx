@@ -29,6 +29,7 @@ import {
   ListItem,
   Flex,
   Text,
+  Badge,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Post, Comment } from "../domain/kakomon-share";
@@ -82,7 +83,7 @@ export const CreatePost = () => {
     chatModal.onOpen();
   };
 
-  // 過去問募集投稿を取得
+  // 過去問募集投稿を取得する処理
   useEffect(() => {
     const fetchKakomonPosts = async () => {
       setIsLoading(true);
@@ -232,7 +233,9 @@ export const CreatePost = () => {
                                 color="teal.500"
                               >
                                 {" "}
-                                (投稿主)
+                                <Badge variant="outline" colorScheme="red">
+                                  投稿主
+                                </Badge>
                               </Text>
                             ) : (
                               ""
@@ -296,13 +299,13 @@ export const CreatePost = () => {
           </Heading>
 
           <Button
-            bgColor="blackAlpha.600"
+            bgColor="blackAlpha.700"
             color="white"
             border="2px"
             _hover={{
               bgColor: "white",
-              color: "blackAlpha.600",
-              borderColor: "blackAlpha.600",
+              color: "blackAlpha.700",
+              borderColor: "blackAlpha.700",
             }}
             onClick={addPostModal.onOpen}
           >

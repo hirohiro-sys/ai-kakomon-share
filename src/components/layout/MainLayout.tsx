@@ -13,12 +13,18 @@ import {
   BoxProps,
   FlexProps,
   Button,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { FaSignOutAlt, FaClipboardList, FaUser } from "react-icons/fa";
 import { MdLaptopChromebook } from "react-icons/md";
-import { ReactText } from "react";
+import React, { ReactText, useRef } from "react";
 import { signOut } from "firebase/auth";
 import firebaseServices from "../../firebase";
 import { useNavigate } from "react-router-dom";
@@ -30,8 +36,8 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: "過去問を募集する", icon: FaClipboardList, path: "/" },
-  { name: "貢献者", icon: FaUser, path: "/contributors" },
+  { name: "過去問募集ページ", icon: FaClipboardList, path: "/" },
+  { name: "貢献する", icon: FaUser, path: "/contributors" },
   { name: "このアプリについて", icon: MdLaptopChromebook, path: "/detail-app" },
 ];
 
@@ -99,6 +105,14 @@ const SidebarContent = ({
   ...rest
 }: SidebarProps) => {
   const { auth } = firebaseServices;
+  const { isOpen, onOpen, onClose: onDialogClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  const handleSignOut = () => {
+    signOut(auth).then(() => {
+      navigate("/signin");
+    });
+  };
   return (
     <Box
       bg={bg}
@@ -113,16 +127,16 @@ const SidebarContent = ({
         h="20"
         alignItems="center"
         justifyContent="space-between"
-        bgColor="teal.100"
+        bgColor="blue.300"
+        bgGradient="linear(to-r, blackAlpha.700, blue.600, cyan.500)"
       >
-        
         <Text
           fontSize="2xl"
           fontFamily="monospace"
           fontWeight="bold"
           m="auto"
           color="white"
-          textShadow="1px 1px 2px rgba(0, 0, 0, 0.7)"
+          textShadow="5px 5px 8px rgba(0, 0, 0, 0.9)"
         >
           KakomonShare
         </Text>
@@ -142,24 +156,41 @@ const SidebarContent = ({
         </NavItem>
       ))}
       <Button
-        onClick={() => {
-          signOut(auth).then(() => {
-            navigate("/signin");
-          });
-        }}
-        ml="70px"
-        mt="570px"
-        color="white"
-        bgColor="red.400"
+        onClick={onOpen}
+        position="fixed"
+        bottom="20px"
+        left="70px"
+        color="red.400"
+        bgColor="white"
         border="2px"
-        _hover={{
-          bgColor: "white",
-          color: "red.400",
-        }}
       >
         サインアウト
         <FaSignOutAlt />
       </Button>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onDialogClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              サインアウトページ
+            </AlertDialogHeader>
+
+            <AlertDialogBody>本当にサインアウトしますか？</AlertDialogBody>
+
+            <AlertDialogFooter>
+                <Button colorScheme="red" onClick={() => { handleSignOut(); onDialogClose(); }} mr="3">
+                  サインアウト
+                </Button>
+                <Button ref={cancelRef} onClick={onDialogClose} variant="outline">
+                  キャンセル
+                </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };
