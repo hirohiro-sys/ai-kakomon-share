@@ -1,4 +1,4 @@
-import { Comment, Post, Subject } from './../domain/kakomon-share';
+import { Comment, Post, Subject, User } from './../domain/kakomon-share';
 import { supabase }  from "../lib/supabase"
 
 /*----------------- 過去問募集関連の関数 -----------------*/
@@ -31,7 +31,7 @@ export const addKakomonPostComment = async (title:string,name: string,comment:st
 }
 
 /*----------------- 科目別過去問一覧関連の関数 -----------------*/
-// 科目を取得する関数
+// 科目情報を取得する関数
 export const getSubjects = async () => {
     const subjects = await supabase.from("kamoku").select("*");
     const subjectsData = subjects.data!.map((subject)=>{
@@ -40,7 +40,17 @@ export const getSubjects = async () => {
     return subjectsData;
 }
 
-// 1年生の科目にkakaoIdを追加する関数
-// export const addKakomonIdTo1nen = async (name:string, kakomonId:string) => {
-//     await supabase.from("kamoku").update({kakomon_id:kakomonId}).eq("name","1年生");
-// }
+// 科目idからユーザーidを取得する関数
+export const getSubjectUserIds = async (subjectId:number) => {
+    const users = await supabase.from("kamoku_user").select("user_id").eq("kamoku_id",subjectId);
+    return users.data;
+}
+
+// ユーザーidからユーザー情報を取得する関数
+export const getUserInfo = async (userId:number) => {
+    const user = await supabase.from("user").select("*").eq("id",userId);
+    const userData = user.data!.map((user)=>{
+        return new User(user.id,user.name,user.kakao_id,user.description);
+    });
+    return userData;
+}

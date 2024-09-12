@@ -35,8 +35,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { getSubjects } from "../lib/supabasefunctions";
-import { Subject } from "../domain/kakomon-share";
+import { getSubjects, getSubjectUserIds, getUserInfo } from "../lib/supabasefunctions";
+import { Subject, User } from "../domain/kakomon-share";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type formInputs = {
@@ -45,10 +45,8 @@ type formInputs = {
 };
 
 export const Contributors = () => {
-  const [subject1, setSubject1] = useState<Subject[]>([]);
-  // const [subject2, setSubject2] = useState<Subject[]>([]);
-  // const [subject3, setSubject3] = useState<Subject[]>([]);
-  // const [subject4, setSubject4] = useState<Subject[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [userInfo, setUserInfo] = useState<User[]>([]);
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const {
@@ -58,13 +56,22 @@ export const Contributors = () => {
     formState: { errors },
   } = useForm<formInputs>();
 
-  // 科目一覧を取得する関数(現状1年生のみ)
+  // 科目情報を取得する関数
   useEffect(() => {
-    const fetchSubjects = async () => {
+    const fetchSubjectsData = async () => {
+      // ここで全科目を取得
       const subjects = await getSubjects();
-      setSubject1(subjects);
+      setSubjects(subjects);
+      // ここで科目ごとのユーザー情報を取得したい
+      const userIds = await getSubjectUserIds(subjects.id);
+      if (!userIds) {
+        console.log("ユーザーが存在しません。");
+        return;
+      }
+      const userInfo = await getUserInfo(userIds.user_id)
+      setUserInfo(userInfo);
     };
-    fetchSubjects();
+    fetchSubjectsData();
   }, []);
 
   // 科目別過去問に対するカカオIDの追加をする関数
@@ -72,6 +79,11 @@ export const Contributors = () => {
     console.log(data);
     reset({ name: "", kakaoId: "" });
     onClose();
+  };
+
+  // 科目の学年でフィルタリングして表示させるための関数
+  const getSubjectsByGrade = (year: string) => {
+    return subjects.filter(subject => subject.year === year);
   };
 
   return (
@@ -164,11 +176,12 @@ export const Contributors = () => {
           <Tab>4年生の科目</Tab>
         </TabList>
 
+        {/* 科目を表示している箇所 */}
         <TabPanels>
-          {/*----------1年生エリア(ここはsupabaseから科目名を引っ張ってきている)----------*/}
-          <TabPanel>
+        {["1", "2", "3", "4"].map(year => (
+          <TabPanel key={year}>
             <Accordion allowMultiple>
-              {subject1.map((subject) => (
+              {getSubjectsByGrade(year).map(subject => (
                 <AccordionItem key={subject.id}>
                   <AccordionButton>
                     <Box as="span" flex="1" textAlign="left" fontWeight="bold">
@@ -176,23 +189,7 @@ export const Contributors = () => {
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
-                  <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </TabPanel>
-
-          {/*----------2年生エリア(現状科目名はハードコーディングしている)----------*/}
-          <TabPanel>
-            <Accordion allowMultiple>
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェア工学概論
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>
+                  <AccordionPanel pb={4}>
                   <TableContainer>
                     <Table size="sm">
                       <Thead>
@@ -203,355 +200,24 @@ export const Contributors = () => {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        <Tr>
-                          <Td>kato</Td>
-                          <Td>demo-id</Td>
-                          <Td>中間の過去問はありますが、期末のはありません。カカオIDからご連絡ください。</Td>
-                        </Tr>
-                        <Tr>
-                          <Td>hirokazu</Td>
-                          <Td>demo-id</Td>
-                          <Td>試験の過去問はありませんが、課題の過去問はあります。いつでも連絡ください。</Td>
-                        </Tr>
+                        {userInfo.map(user => (
+                          <Tr key={user.id}>
+                            <Td>{user.name}</Td>
+                            <Td>{user.kakao_id}</Td>
+                            <Td>{user.description}</Td>
+                          </Tr>
+                        ))}
                       </Tbody>
     
                     </Table>
                   </TableContainer>
-                </AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    オープンソースソフトウェア
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    コンピュータデータ構造
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    データサイエンス概論
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    プログラミング応用 I
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェア分析設計
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    webプログラミング
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    コンピュータアルゴリズム
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    人工知能数学
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    プログラミング応用 II
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
             </Accordion>
           </TabPanel>
-
-          {/*----------3年生エリア----------*/}
-          <TabPanel>
-            <Accordion allowMultiple>
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    統計的推論
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    パターン認識と機械学習
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    IT産業トレンドと進路
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    DB設計活用
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    人工知能概論
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェアプロジェクト基礎
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    コンピュータビジョン
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソーシャルネットワーク分析
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェア品質管理
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    就業外国語実務
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    MLOps
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    人工知能工学
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェアプロジェクト応用
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-            </Accordion>
-          </TabPanel>
-
-          {/*----------4年生エリア----------*/}
-          <TabPanel>
-            <Accordion allowMultiple>
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    AR/VR
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    IT技術マーケティング方法論
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    情報分析
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    データ視覚化
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ソフトウェアプロジェクト深化
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    ロボティクス
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    コンピュータ保安
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    AI/SW新技術セミナー
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    webインテリジェンス
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                    産学協力SWプロジェクト
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4}>- demo-id</AccordionPanel>
-              </AccordionItem>
-            </Accordion>
-          </TabPanel>
-        </TabPanels>
+        ))}
+      </TabPanels>
       </Tabs>
 
       {/* フッター */}
