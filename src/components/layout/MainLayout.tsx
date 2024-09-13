@@ -128,7 +128,7 @@ const SidebarContent = ({
         alignItems="center"
         justifyContent="space-between"
         bgColor="blue.300"
-        bgGradient="linear(to-r, blackAlpha.700, blue.600, cyan.500)"
+        bgGradient="linear(to-r, blackAlpha.700, blue.400)"
       >
         <Text
           fontSize="2xl"
@@ -175,7 +175,7 @@ const SidebarContent = ({
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              サインアウトページ
+              サインアウト確認
             </AlertDialogHeader>
 
             <AlertDialogBody>本当にサインアウトしますか？</AlertDialogBody>

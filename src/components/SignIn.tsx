@@ -21,10 +21,18 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { FaDoorOpen } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+
+const preloadImage = (url: string) => {
+  const img = new Image();
+  img.src = url;
+};
 
 export const SignIn = () => {
   const { auth } = firebaseServices;
   const navigate = useNavigate();
+
   const signInWithGoogle = (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider).then((result) => {
@@ -33,7 +41,6 @@ export const SignIn = () => {
       return result;
     });
   };
-
   const signInWithGithub = (): Promise<UserCredential> => {
     const provider = new GithubAuthProvider();
     return signInWithPopup(auth, provider).then((result) => {
@@ -42,10 +49,14 @@ export const SignIn = () => {
       return result;
     });
   };
+
+  useEffect(() => {
+    preloadImage("https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3279945/533e08f0-f2da-d547-bfcc-276c3123c0ec.jpeg");
+  }, []);
+  
   return (
     <>
       <Center h="100vh" position="relative" overflow="hidden">
-        {/* 別のやり方で画像表示できる気がする(chakraの公式docみる) */}
         <Box
           position="absolute"
           top="0"
