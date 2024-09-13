@@ -4,6 +4,7 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  Badge,
   Box,
   Button,
   Center,
@@ -18,6 +19,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Select,
   Stack,
   Tab,
   Table,
@@ -29,24 +31,36 @@ import {
   Tbody,
   Td,
   Text,
+  Textarea,
   Th,
   Thead,
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { getSubjects, getSubjectUserIds, getUserInfo } from "../lib/supabasefunctions";
+import {
+  addUser,
+  addUserToSubject,
+  getSubjects,
+  getSubjectUserIds,
+  getUserInfo,
+} from "../lib/supabasefunctions";
 import { Subject, User } from "../domain/kakomon-share";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type formInputs = {
   name: string;
+  subjectName: string;
   kakaoId: string;
+  description: string;
 };
 
 export const Contributors = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [userInfo, setUserInfo] = useState<User[]>([]);
+  const [userInfoBySubject, setUserInfoBySubject] = useState<
+    // key(科目名)が文字列でvalue(ユーザー情報)がuser型のstate
+    Record<string, User[]>
+  >({});
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const {
@@ -59,31 +73,79 @@ export const Contributors = () => {
   // 科目情報を取得する関数
   useEffect(() => {
     const fetchSubjectsData = async () => {
-      // ここで全科目を取得
       const subjects = await getSubjects();
       setSubjects(subjects);
-      // ここで科目ごとのユーザー情報を取得したい
-      const userIds = await getSubjectUserIds(subjects.id);
-      if (!userIds) {
-        console.log("ユーザーが存在しません。");
-        return;
-      }
-      const userInfo = await getUserInfo(userIds.user_id)
-      setUserInfo(userInfo);
+
+      // 各科目のユーザー情報を取得
+      const userInfosBySubject = await Promise.all(
+        subjects.map(async (subject) => {
+          const userInfos = await fetchUserInfoBySubjectId(subject.id);
+          return { subjectId: subject.id, userInfos };
+        })
+      );
+
+      const userInfoBySubjectMap = userInfosBySubject.reduce(
+        (acc, { subjectId, userInfos }) => {
+          acc[subjectId] = userInfos.flat();
+          return acc;
+        },
+        {} as Record<string, User[]>
+      );
+
+      setUserInfoBySubject(userInfoBySubjectMap);
     };
     fetchSubjectsData();
   }, []);
 
-  // 科目別過去問に対するカカオIDの追加をする関数
-  const onClickAddKakaoId: SubmitHandler<formInputs> = async (data) => {
-    console.log(data);
-    reset({ name: "", kakaoId: "" });
-    onClose();
+  // 科目ごとのユーザー情報を取得する関数
+  const fetchUserInfoBySubjectId = async (subjectId: number) => {
+    const userIds = await getSubjectUserIds(subjectId);
+    if (!userIds) {
+      console.log("ユーザーが存在しません。");
+      return [];
+    }
+    const userInfos = await Promise.all(
+      userIds.map((userId) => getUserInfo(userId.user_id))
+    );
+    return userInfos;
   };
 
   // 科目の学年でフィルタリングして表示させるための関数
   const getSubjectsByGrade = (year: string) => {
-    return subjects.filter(subject => subject.year === year);
+    return subjects.filter((subject) => subject.year === year);
+  };
+
+  // 科目別過去問に対するカカオIDの追加をする関数
+  const onClickAddUserInfo: SubmitHandler<formInputs> = async (data) => {
+    // console.log(data);
+    const userId = await addUser(
+      data.name,
+      Number(data.subjectName),
+      data.kakaoId,
+      data.description
+    );
+    await addUserToSubject(Number(data.subjectName), userId);
+
+    // 科目とユーザー情報を再取得(をしないとリロードしないと画面に反映されない)
+    const updatedSubjects = await getSubjects();
+    setSubjects(updatedSubjects);
+    const userInfosBySubject = await Promise.all(
+      updatedSubjects.map(async (subject) => {
+        const userInfos = await fetchUserInfoBySubjectId(subject.id);
+        return { subjectId: subject.id, userInfos };
+      })
+    );
+    const userInfoBySubjectMap = userInfosBySubject.reduce(
+      (acc, { subjectId, userInfos }) => {
+        acc[subjectId] = userInfos.flat();
+        return acc;
+      },
+      {} as Record<string, User[]>
+    );
+    setUserInfoBySubject(userInfoBySubjectMap);
+    
+    reset({ name: "", subjectName: "", kakaoId: "", description: "" });
+    onClose();
   };
 
   return (
@@ -95,16 +157,19 @@ export const Contributors = () => {
           <ModalHeader>登録内容を入力してください</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <form onSubmit={handleSubmit(onClickAddKakaoId)}>
+            <form onSubmit={handleSubmit(onClickAddUserInfo)}>
               <FormControl isInvalid={Boolean(errors.name)}>
-                <FormLabel htmlFor="name" fontWeight="bold" mt="15px">
-                  科目名
+                <FormLabel htmlFor="name" fontWeight="bold">
+                  <Badge colorScheme="red" mr="3px">
+                    必須
+                  </Badge>
+                  お名前
                 </FormLabel>
                 <Input
                   id="name"
-                  placeholder="科目名を入力してください。"
+                  placeholder="お名前を入力してください。"
                   {...register("name", {
-                    required: "⚠️科目名は必須入力項目です。",
+                    required: "⚠️お名前は必須入力項目です。",
                   })}
                 />
                 <FormErrorMessage>
@@ -112,7 +177,10 @@ export const Contributors = () => {
                 </FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={Boolean(errors.kakaoId)}>
-                <FormLabel htmlFor="kakaoId" fontWeight="bold">
+                <FormLabel htmlFor="kakaoId" fontWeight="bold" mt="15px">
+                  <Badge colorScheme="red" mr="3px">
+                    必須
+                  </Badge>
                   カカオID
                 </FormLabel>
                 <Input
@@ -125,6 +193,44 @@ export const Contributors = () => {
                 <FormErrorMessage>
                   {errors.kakaoId && errors.kakaoId.message}
                 </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={Boolean(errors.subjectName)}>
+                <FormLabel htmlFor="subject-name" fontWeight="bold" mt="15px">
+                  <Badge colorScheme="red" mr="3px">
+                    必須
+                  </Badge>
+                  科目名
+                </FormLabel>
+                <Select
+                  id="subject-name"
+                  variant="outline"
+                  placeholder="科目を選んでください"
+                  {...register("subjectName", {
+                    required: "⚠️科目は必須入力項目です。",
+                  })}
+                >
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>
+                      {subject.name}
+                    </option>
+                  ))}
+                </Select>
+                <FormErrorMessage>
+                  {errors.subjectName && errors.subjectName.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="description" fontWeight="bold" mt="15px">
+                  <Badge colorScheme="blackAlpha" variant="solid" mr="3px">
+                    任意
+                  </Badge>
+                  補足
+                </FormLabel>
+                <Textarea
+                  id="description"
+                  placeholder="例) 中間の過去問はありますが、期末の過去問はありません。"
+                  {...register("description")}
+                />
               </FormControl>
 
               <Button
@@ -178,46 +284,61 @@ export const Contributors = () => {
 
         {/* 科目を表示している箇所 */}
         <TabPanels>
-        {["1", "2", "3", "4"].map(year => (
-          <TabPanel key={year}>
-            <Accordion allowMultiple>
-              {getSubjectsByGrade(year).map(subject => (
-                <AccordionItem key={subject.id}>
-                  <AccordionButton>
-                    <Box as="span" flex="1" textAlign="left" fontWeight="bold">
-                      {subject.name}
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                  <TableContainer>
-                    <Table size="sm">
-                      <Thead>
-                        <Tr>
-                          <Th>お名前</Th>
-                          <Th>カカオID</Th>
-                          <Th>補足</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {userInfo.map(user => (
-                          <Tr key={user.id}>
-                            <Td>{user.name}</Td>
-                            <Td>{user.kakao_id}</Td>
-                            <Td>{user.description}</Td>
-                          </Tr>
-                        ))}
-                      </Tbody>
-    
-                    </Table>
-                  </TableContainer>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </TabPanel>
-        ))}
-      </TabPanels>
+          {["1", "2", "3", "4"].map((year) => (
+            <TabPanel key={year}>
+              <Accordion allowMultiple>
+                {getSubjectsByGrade(year).map((subject) => (
+                  <AccordionItem key={subject.id}>
+                    <AccordionButton>
+                      <Box
+                        as="span"
+                        flex="1"
+                        textAlign="left"
+                        fontWeight="bold"
+                      >
+                        {subject.name}
+                      </Box>
+                      <AccordionIcon />
+                    </AccordionButton>
+                    <AccordionPanel pb={4}>
+                      <TableContainer>
+                        <Table size="sm">
+                          {userInfoBySubject[subject.id]?.length ? (
+                            <>
+                              <Thead>
+                                <Tr>
+                                  <Th>お名前</Th>
+                                  <Th>カカオID</Th>
+                                  <Th>補足</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {userInfoBySubject[subject.id].map((user) => (
+                                  <Tr key={user.id}>
+                                    <Td>{user.name}</Td>
+                                    <Td>{user.kakao_id}</Td>
+                                    <Td>{user.description}</Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </>
+                          ) : (
+                            // table内でTextのみを使うとコンソールで警告が出る
+                            <Tbody>
+                              <Tr>
+                                <Td colSpan={1}>ユーザー情報がありません。</Td>
+                              </Tr>
+                            </Tbody>
+                          )}
+                        </Table>
+                      </TableContainer>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </TabPanel>
+          ))}
+        </TabPanels>
       </Tabs>
 
       {/* フッター */}

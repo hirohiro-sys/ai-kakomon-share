@@ -54,3 +54,25 @@ export const getUserInfo = async (userId:number) => {
     });
     return userData;
 }
+
+// ユーザー情報を追加する関数
+export const addUser = async (name: string, subjectName: number, kakaoId: string, description: string) => {
+    const { data, error } = await supabase
+      .from("user")
+      .insert({ name, kakao_id: kakaoId, description, subject_id: subjectName })
+      .select('id')
+      .single();
+    if (error) {
+      console.error('Error adding user:', error);
+      throw error; // 必要に応じてエラーを再スロー
+    }
+  
+    // 追加したユーザーの id を返す
+    return data.id;
+  };
+  
+
+// 科目とユーザーの中間テーブルにデータを追加する関数
+export const addUserToSubject = async (subjectId:number,userId: number) => {
+    await supabase.from("kamoku_user").insert({kamoku_id:subjectId,user_id:userId});
+}

@@ -128,6 +128,7 @@ export const CreatePost = () => {
             <form onSubmit={handleSubmit(onClickAddKakomonPost)}>
               <FormControl isInvalid={Boolean(errors.title)}>
                 <FormLabel htmlFor="title" fontWeight="bold">
+                  <Badge colorScheme='red' mr="3px">必須</Badge>
                   タイトル
                 </FormLabel>
                 <Input
@@ -143,6 +144,7 @@ export const CreatePost = () => {
               </FormControl>
               <FormControl isInvalid={Boolean(errors.name)}>
                 <FormLabel htmlFor="name" fontWeight="bold" mt="15px">
+                <Badge colorScheme='red' mr="3px">必須</Badge>
                   カカオID又はニックネーム
                 </FormLabel>
                 <Input
@@ -158,6 +160,7 @@ export const CreatePost = () => {
               </FormControl>
               <FormControl isInvalid={Boolean(errors.description)}>
                 <FormLabel htmlFor="description" fontWeight="bold" mt="15px">
+                <Badge colorScheme='red' mr="3px">必須</Badge>
                   過去問詳細
                 </FormLabel>
                 <Textarea
