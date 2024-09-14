@@ -8,6 +8,9 @@ import {
   Box,
   Button,
   Center,
+  Editable,
+  EditablePreview,
+  EditableTextarea,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -36,6 +39,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useEditableControls,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -44,9 +48,12 @@ import {
   getSubjects,
   getSubjectUserIds,
   getUserInfo,
+  updateUserInfo,
 } from "../lib/supabasefunctions";
 import { Subject, User } from "../domain/kakomon-share";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { getAuth } from "firebase/auth";
+import { FaPenToSquare } from "react-icons/fa6";
 
 type formInputs = {
   name: string;
@@ -63,12 +70,44 @@ export const Contributors = () => {
   >({});
   const { isOpen, onClose, onOpen } = useDisclosure();
 
+  const EditableControls = () => {
+    const {
+      isEditing,
+      getEditButtonProps,
+      getCancelButtonProps,
+      getSubmitButtonProps,
+    } = useEditableControls();
+
+    return isEditing ? (
+      <span>
+        <Button size="sm" {...getSubmitButtonProps()} colorScheme="blue">
+          保存する
+        </Button>
+        <Button size="sm" {...getCancelButtonProps()} ml="2">
+          キャンセル
+        </Button>
+      </span>
+    ) : (
+      <Button
+        size="sm"
+        {...getEditButtonProps()}
+        colorScheme="teal"
+        ml="20px"
+      >
+        <FaPenToSquare />
+      </Button>
+    );
+  };
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<formInputs>();
+
+  const auth = getAuth();
+  const currentUserId = auth.currentUser?.uid;
 
   // 科目情報を取得する関数
   useEffect(() => {
@@ -122,7 +161,8 @@ export const Contributors = () => {
       data.name,
       Number(data.subjectName),
       data.kakaoId,
-      data.description
+      data.description,
+      currentUserId!
     );
     await addUserToSubject(Number(data.subjectName), userId);
 
@@ -143,9 +183,33 @@ export const Contributors = () => {
       {} as Record<string, User[]>
     );
     setUserInfoBySubject(userInfoBySubjectMap);
-    
+
     reset({ name: "", subjectName: "", kakaoId: "", description: "" });
     onClose();
+  };
+
+  // ユーザーの備考欄を更新する関数
+  const handleDescriptionChange = async (
+    userId: number,
+    newDescription: string
+  ) => {
+    await updateUserInfo(userId, newDescription);
+    const updatedSubjects = await getSubjects();
+    setSubjects(updatedSubjects);
+    const userInfosBySubject = await Promise.all(
+      updatedSubjects.map(async (subject) => {
+        const userInfos = await fetchUserInfoBySubjectId(subject.id);
+        return { subjectId: subject.id, userInfos };
+      })
+    );
+    const userInfoBySubjectMap = userInfosBySubject.reduce(
+      (acc, { subjectId, userInfos }) => {
+        acc[subjectId] = userInfos.flat();
+        return acc;
+      },
+      {} as Record<string, User[]>
+    );
+    setUserInfoBySubject(userInfoBySubjectMap);
   };
 
   return (
@@ -224,7 +288,7 @@ export const Contributors = () => {
                   <Badge colorScheme="blackAlpha" variant="solid" mr="3px">
                     任意
                   </Badge>
-                  補足
+                  補足 （ここは後で編集可能です）
                 </FormLabel>
                 <Textarea
                   id="description"
@@ -254,10 +318,15 @@ export const Contributors = () => {
             fontFamily="serif"
             fontSize="50px"
             textAlign="center"
-            textShadow="2px 2px 4px rgba(0, 0, 0, 0.3)"
+            textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
+            color="blackAlpha.700"
+            letterSpacing="wide"
+            fontWeight="bold"
+            mb={4}
           >
-            過去問登録ページ
+            📚過去問登録ページ
           </Heading>
+
           <Button
             bgColor="blackAlpha.700"
             color="white"
@@ -317,7 +386,38 @@ export const Contributors = () => {
                                   <Tr key={user.id}>
                                     <Td>{user.name}</Td>
                                     <Td>{user.kakao_id}</Td>
-                                    <Td>{user.description}</Td>
+                                    <Td maxW="200px">
+                                      <Editable
+                                        defaultValue={user.description}
+                                        onSubmit={(newDescription) =>
+                                          handleDescriptionChange(
+                                            user.id,
+                                            newDescription
+                                          )
+                                        }
+                                        isPreviewFocusable={false}
+                                      >
+                                        <EditablePreview />
+                                        <EditableTextarea
+                                          w="70%"
+                                          maxW="600px"
+                                          minH="50px"
+                                          mb="-15px"
+                                          mr="10px"
+                                        />
+                                        {user.firebase_user_id ===
+                                        currentUserId ? (
+                                          <EditableControls />
+                                        ) : (
+                                          <Badge
+                                            colorScheme="blackAlpha"
+                                            variant="solid"
+                                          >
+                                            編集権限がありません
+                                          </Badge>
+                                        )}
+                                      </Editable>
+                                    </Td>
                                   </Tr>
                                 ))}
                               </Tbody>

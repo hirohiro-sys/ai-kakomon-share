@@ -50,16 +50,16 @@ export const getSubjectUserIds = async (subjectId:number) => {
 export const getUserInfo = async (userId:number) => {
     const user = await supabase.from("user").select("*").eq("id",userId);
     const userData = user.data!.map((user)=>{
-        return new User(user.id,user.name,user.kakao_id,user.description);
+        return new User(user.id,user.name,user.kakao_id,user.description,user.firebase_user_id);
     });
     return userData;
 }
 
 // ユーザー情報を追加する関数
-export const addUser = async (name: string, subjectName: number, kakaoId: string, description: string) => {
+export const addUser = async (name: string, subjectName: number, kakaoId: string, description: string,firebase_user_id: string) => {
     const { data, error } = await supabase
         .from("user")
-        .insert({ name, kakao_id: kakaoId, description, subject_id: subjectName })
+        .insert({ name, kakao_id: kakaoId, description, subject_id: subjectName,firebase_user_id })
         .select('id')
         .single();
     if (error) {
@@ -68,6 +68,11 @@ export const addUser = async (name: string, subjectName: number, kakaoId: string
     }
     return data.id;
 };
+
+// ユーザー情報(備考のみ)を更新する関数
+export const updateUserInfo = async (userId:number, description: string) => {
+    await supabase.from("user").update({description}).eq("id",userId);
+}
 
 
 // 科目とユーザーの中間テーブルにデータを追加する関数

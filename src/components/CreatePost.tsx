@@ -298,13 +298,18 @@ export const CreatePost = () => {
       {/* 以下過去問募集のメインページ */}
       <Center mb="30px">
         <Stack>
-          <Heading
+          
+        <Heading
             fontFamily="serif"
             fontSize="50px"
             textAlign="center"
-            textShadow="2px 2px 4px rgba(0, 0, 0, 0.3)"
+            textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
+            color="blackAlpha.700"
+            letterSpacing="wide"
+            fontWeight="bold"
+            mb={4}
           >
-            過去問募集ページ
+            📣過去問募集ページ
           </Heading>
 
           <Button
@@ -348,15 +353,7 @@ export const CreatePost = () => {
                 </Td>
                 <Td>
                 <Button
-                    bgColor="gray.500"
-                    color="white"
-                    border="2px"
-                    borderColor="gray.500"
-                    _hover={{
-                      bgColor: "white",
-                      color: "black",
-                      borderColor: "gray.500",
-                    }}
+                    colorScheme="blackAlpha"
                     onClick={() => handleChatOpen(kakomonPost)}
                   >
                     詳細

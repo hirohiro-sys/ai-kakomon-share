@@ -15,5 +15,5 @@ export class Subject {
 
 // ユーザーの型を定義
 export class User {
-    constructor(public id: number, public name: string, public kakao_id: string,public description: string) {}
+    constructor(public id: number, public name: string, public kakao_id: string,public description: string,public firebase_user_id: string) {}
 }
