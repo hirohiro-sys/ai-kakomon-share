@@ -314,24 +314,35 @@ export const Contributors = () => {
       {/* 科目別過去問情報ページのメインレイアウト */}
       <Center>
         <Stack>
-          <Heading
-            fontFamily="serif"
-            fontSize="50px"
-            textAlign="center"
-            textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
-            color="blackAlpha.700"
-            letterSpacing="wide"
-            fontWeight="bold"
-            mb={4}
-          >
-            📚過去問登録ページ
-          </Heading>
+        <Box position="relative" padding="1rem .5rem" mb={5}>
+            <Heading
+              fontFamily="serif"
+              fontSize="50px"
+              textAlign="center"
+              textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
+              color="blackAlpha.700"
+              letterSpacing="wide"
+              fontWeight="bold"
+            >
+              過去問登録ページ
+            </Heading>
+            <Box
+              position="absolute"
+              bottom="0"
+              left="0"
+              width="100%"
+              height="4px"
+              content='""'
+              backgroundImage="linear-gradient(to left, #30cfd0 0%, #330867 100%)"
+            />
+          </Box>
 
           <Button
             bgColor="blackAlpha.700"
             color="white"
             border="2px"
             mb="30px"
+            borderRadius="full"
             onClick={onOpen}
             _hover={{
               bgColor: "white",

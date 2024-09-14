@@ -20,18 +20,28 @@ export const DetailApp = () => {
     <>
       <Center>
         <Stack>
-          <Heading
-            fontFamily="serif"
-            fontSize="50px"
-            textAlign="center"
-            textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
-            color="blackAlpha.700"
-            letterSpacing="wide"
-            fontWeight="bold"
-            mb={4}
-          >
-            🧑‍💻管理者ページ
-          </Heading>
+        <Box position="relative" padding="1rem .5rem" mb={5}>
+            <Heading
+              fontFamily="serif"
+              fontSize="50px"
+              textAlign="center"
+              textShadow="3px 3px 6px rgba(0, 0, 0, 0.4)"
+              color="blackAlpha.700"
+              letterSpacing="wide"
+              fontWeight="bold"
+            >
+              管理者ページ
+            </Heading>
+            <Box
+              position="absolute"
+              bottom="0"
+              left="0"
+              width="100%"
+              height="4px"
+              content='""'
+              backgroundImage="linear-gradient(to left, #30cfd0 0%, #330867 100%)"
+            />
+          </Box>
           <Card maxW="md" m="auto" mt="20px" variant="outline" boxShadow="lg">
             <CardBody m="auto">
               <Flex gap="4" alignItems="center" mb="20px">
@@ -80,7 +90,7 @@ export const DetailApp = () => {
         </Stack>
       </Center>
       {/* 現状更新情報はハードコーディングしている(本当はここもDBで管理したほうが良さそう) */}
-      <Text fontSize="30px" fontWeight="bold">
+      <Text fontSize="30px" fontWeight="bold" mt="50px">
         <Text as="span" fontSize="36px" color="green.500">
           更
         </Text>
