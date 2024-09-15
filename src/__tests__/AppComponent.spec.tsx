@@ -1,8 +1,16 @@
-// import App from "../App";
-// import { render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { DetailApp } from "../components/DetailApp";
+import { ChakraProvider } from "@chakra-ui/react";
 
-describe("title", () => {
-  test('true is true', () => {
-    expect(true).toBe(true);
-  });
-});
+describe("管理者ページ", () => {
+  test("タイトルが表示されること", () => {
+    render(
+      <ChakraProvider>
+        <DetailApp/>
+      </ChakraProvider>
+  )
+  // console.log(screen.getByTestId("detail-page-title"))
+    expect(screen.getByTestId("detail-page-title")).toBeInTheDocument()
+  }
+
+)});

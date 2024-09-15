@@ -19,7 +19,6 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
@@ -46,7 +45,6 @@ export default function SimpleSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [selectedPath, setSelectedPath] = useState("/");
-  const isMobile = useBreakpointValue({ base: true, md: false });
   const bg = useColorModeValue("gray.100", "gray.900");
   const sidebarBg = useColorModeValue("white", "gray.900");
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -55,20 +53,6 @@ export default function SimpleSidebar() {
 
   return (
     <Box minH="100vh" bg={bg}>
-      {isMobile ? (
-        <Flex
-          direction="column"
-          align="center"
-          justify="center"
-          h="100vh"
-          w="100vw"
-          bg="gray.200"
-        >
-          <Text fontSize="xl" mb="4">
-            現在モバイル幅での表示はサポートしていません。
-          </Text>
-        </Flex>
-      ) : (
         <>
           <SidebarContent
             onClose={onClose}
@@ -108,7 +92,7 @@ export default function SimpleSidebar() {
             {/* ここで各コンポーネントの中身を表示 */}
           </Box>
         </>
-      )}
+      
     </Box>
   );
 }
