@@ -29,7 +29,7 @@ export const DetailApp = () => {
               color="blackAlpha.700"
               letterSpacing="wide"
               fontWeight="bold"
-              data-testid="detail-page-title"
+              data-testid="admin-page-title"
             >
               管理者ページ
             </Heading>

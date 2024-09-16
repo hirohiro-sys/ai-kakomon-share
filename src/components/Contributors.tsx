@@ -344,6 +344,7 @@ export const Contributors = () => {
             mb="30px"
             borderRadius="full"
             onClick={onOpen}
+            data-testid="kakomon-register-title"
             _hover={{
               bgColor: "white",
               color: "blackAlpha.700",

@@ -75,7 +75,7 @@ export const CreatePost = () => {
     reset({ title: "", name: "", description: "" });
     addPostModal.onClose();
   };
-  // 過去問の募集投稿の内容を取得しモーダルを開く関数
+  // 過去問の募集投稿の内容を取得し、掲示板のモーダルを開く関数
   const handleChatOpen = async (post: Post) => {
     setSelectedPost(post);
     const comments = await getKakomonPostComments(post.title);
@@ -94,7 +94,7 @@ export const CreatePost = () => {
     fetchKakomonPosts();
   }, []);
 
-  // 過去問募集投稿に対するコメントを追加
+  // 過去問募集投稿に対するコメントを追加(ここはなぜかreact-hook-formを使っていない)
   const onClickAddComment = async () => {
     if (selectedPost && commentText && commentName) {
       await addKakomonPostComment(selectedPost.title, commentName, commentText);
@@ -104,17 +104,6 @@ export const CreatePost = () => {
       setCommentName("");
     }
   };
-
-  if (isLoading) {
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      height="100vh"
-    >
-      <Spinner size="xl" />
-    </Box>;
-  }
 
   return (
     <>
@@ -136,6 +125,7 @@ export const CreatePost = () => {
                 <Input
                   id="title"
                   placeholder="タイトルを入力してください。"
+                  data-testid="title-input"
                   {...register("title", {
                     required: "⚠️タイトルは必須入力項目です。",
                   })}
@@ -149,11 +139,12 @@ export const CreatePost = () => {
                   <Badge colorScheme="red" mr="3px">
                     必須
                   </Badge>
-                  カカオID又はニックネーム
+                  お名前又はカカオID
                 </FormLabel>
                 <Input
                   id="name"
                   placeholder="お名前を入力してください。"
+                  data-testid="name-input"
                   {...register("name", {
                     required: "⚠️お名前は必須入力項目です。",
                   })}
@@ -172,6 +163,7 @@ export const CreatePost = () => {
                 <Textarea
                   id="description"
                   placeholder="過去問の詳細を入力してください。"
+                  data-testid="description-input"
                   {...register("description", {
                     required: "⚠️過去問詳細は必須入力項目です。",
                   })}
@@ -186,6 +178,7 @@ export const CreatePost = () => {
                 w="100%"
                 mt="20px"
                 mb="10px"
+                data-testid="kakomon-post-button"
               >
                 投稿する
               </Button>
@@ -195,7 +188,7 @@ export const CreatePost = () => {
       </Modal>
 
       {/* chatのモーダル */}
-      <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose}>
+      <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose} data-testid="detail-modal">
         <ModalOverlay />
         <ModalContent maxW="700px">
           <ModalCloseButton />
@@ -282,6 +275,7 @@ export const CreatePost = () => {
                           colorScheme="teal"
                           onClick={onClickAddComment}
                           mb="-9"
+                          data-testid="send-comment-button"
                         >
                           <IoSend />
                         </Button>
@@ -307,6 +301,7 @@ export const CreatePost = () => {
               color="blackAlpha.700"
               letterSpacing="wide"
               fontWeight="bold"
+              data-testid="kakomon-post-title"
             >
               過去問募集ページ
             </Heading>
@@ -332,52 +327,65 @@ export const CreatePost = () => {
               borderColor: "blackAlpha.700",
             }}
             onClick={addPostModal.onOpen}
+            data-testid="kakomon-post-modal"
           >
             過去問を募集する
           </Button>
         </Stack>
       </Center>
-      <TableContainer>
-        <Table variant="simple" size="sm" colorScheme="blackAlpha">
-          <Thead>
-            <Tr>
-              <Th fontWeight="bold" fontSize="lg">
-                タイトル
-              </Th>
-              <Th fontWeight="bold" fontSize="lg">
-                カカオID又はニックネーム
-              </Th>
-              <Th fontWeight="bold" fontSize="lg">
-                過去問詳細
-              </Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {kakomonPosts.map((kakomonPost) => (
-              <Tr key={kakomonPost.id}>
-                <Td>{kakomonPost.title}</Td>
-                <Td>{kakomonPost.name}</Td>
-                <Td isTruncated maxW="150px">
-                  {kakomonPost.description}
-                </Td>
-                <Td>
-                  <Button
-                    colorScheme="blackAlpha"
-                    onClick={() => handleChatOpen(kakomonPost)}
-                  >
-                    詳細
-                    <BiMessageRoundedDetail
-                      size="20px"
-                      style={{ marginLeft: "8px" }}
-                    />
-                  </Button>
-                </Td>
+      {isLoading ? (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="50vh"
+        >
+          <Spinner size="xl" />
+        </Box>
+      ) : (
+        <TableContainer data-testid="record-list">
+          <Table variant="simple" size="sm" colorScheme="blackAlpha">
+            <Thead>
+              <Tr>
+                <Th fontWeight="bold" fontSize="lg">
+                  タイトル
+                </Th>
+                <Th fontWeight="bold" fontSize="lg">
+                  カカオID又はニックネーム
+                </Th>
+                <Th fontWeight="bold" fontSize="lg">
+                  過去問詳細
+                </Th>
+                <Th></Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+            </Thead>
+            <Tbody>
+              {kakomonPosts.map((kakomonPost) => (
+                <Tr key={kakomonPost.id}>
+                  <Td>{kakomonPost.title}</Td>
+                  <Td>{kakomonPost.name}</Td>
+                  <Td isTruncated maxW="150px">
+                    {kakomonPost.description}
+                  </Td>
+                  <Td>
+                    <Button
+                      colorScheme="blackAlpha"
+                      onClick={() => handleChatOpen(kakomonPost)}
+                      data-testid="detail-modal-button"
+                    >
+                      詳細
+                      <BiMessageRoundedDetail
+                        size="20px"
+                        style={{ marginLeft: "8px" }}
+                      />
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
       <Box
         as="footer"
         bg="gray.50"
