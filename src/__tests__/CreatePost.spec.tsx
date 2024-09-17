@@ -26,25 +26,28 @@ const addMockData = [
   },
 ];
 
-// const initialMockDataComment = [
-//   {
-//     id: 1,
-//     name: "テスト太郎",
-//     comment: "これはテストです(コメント版)。",
-//   },
-// ];
-// const addMockDataComment = [
-//   {
-//     id: 1,
-//     name: "テスト太郎",
-//     comment: "これはテストです(コメント版)。",
-//   },
-//   {
-//     id: 2,
-//     name: "テスト二郎",
-//     comment: "これはテストです2(コメント版)。",
-//   },
-// ];
+const initialMockDataComment = [
+  {
+    id: 1,
+    title: "test",
+    name: "テスト太郎",
+    comment: "これはテストです(コメント版)。",
+  },
+];
+const addMockDataComment = [
+  {
+    id: 1,
+    title: "test",
+    name: "テスト太郎",
+    comment: "これはテストです(コメント版)。",
+  },
+  {
+    id: 2,
+    title: "test",
+    name: "テスト二郎",
+    comment: "これはテストです2(コメント版)。",
+  },
+];
 
 const mockGetKakomonPosts = jest
   .fn()
@@ -53,17 +56,17 @@ const mockGetKakomonPosts = jest
   .mockResolvedValueOnce(initialMockData)
   .mockResolvedValue(addMockData);
 
-// const mockGetKakomonPostComments = jest
-// .fn()
-// .mockResolvedValueOnce(initialMockDataComment)
-// .mockResolvedValue(addMockDataComment);
+const mockGetKakomonPostComments = jest
+  .fn()
+  .mockResolvedValueOnce(initialMockDataComment)
+  .mockResolvedValue(addMockDataComment);
 
 jest.mock("../lib/supabasefunctions", () => {
   return {
     getKakomonPosts: () => mockGetKakomonPosts(),
     addKakomonPost: jest.fn(),
-    // getKakomonPostComments: () => mockGetKakomonPostComments(),
-    // addKakomonPostComment: jest.fn(),
+    getKakomonPostComments: () => mockGetKakomonPostComments(),
+    addKakomonPostComment: jest.fn(),
   };
 });
 
@@ -123,35 +126,13 @@ describe("過去問の募集投稿ページのテスト", () => {
   });
 
   // test("コメントを追加するとコメント一覧が更新される", async () => {
-  //   // まずは過去問の募集投稿を取得
+  //   // 投稿が読み込まれるまで待機
   //   await waitFor(() => {
   //     const recordList = screen.getByTestId("record-list");
   //     expect(recordList).toBeInTheDocument();
   //   });
-  
-  //   // 詳細モーダルを開く
-  //   await waitFor(() => {
-  //     const detailButtons = screen.getAllByTestId("detail-modal-button");
-  //     fireEvent.click(detailButtons[0]);
-  //   });
-  
-  //   // モーダルが開くのを待つ
-  //   await waitFor(() => {
-  //     expect(screen.getByTestId("detail-modal")).toBeInTheDocument();
-  //   });
-  
-  //   // コメントを追加
-  //   const nameInput = screen.getByPlaceholderText("お名前を入力してください。");
-  //   const commentInput = screen.getByPlaceholderText("メッセージを入力してください。");
-  //   fireEvent.change(nameInput, { target: { value: "テスト二郎" } });
-  //   fireEvent.change(commentInput, { target: { value: "これはテストです(コメント版)。" } });
-  //   fireEvent.click(screen.getByTestId("send-comment-button"));
-  
-  //   // コメントが追加されているか確認
-  //   await waitFor(() => {
-  //     expect(screen.getByText("これはテストです2(コメント版)。")).toBeInTheDocument();
-  //   });
+  //   // 複数のボタンがある場合、特定の要素を選択する
+  //   const detailButtons = await screen.findAllByTestId("detail-modal-button");
+  //   expect(detailButtons.length).toBeGreaterThan(0); // ボタンが存在することを確認
   // });
-  
-  
 });

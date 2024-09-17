@@ -40,6 +40,7 @@ import {
   Tr,
   useDisclosure,
   useEditableControls,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -69,6 +70,7 @@ export const Contributors = () => {
     Record<string, User[]>
   >({});
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const Toast = useToast();
 
   const EditableControls = () => {
     const {
@@ -185,6 +187,12 @@ export const Contributors = () => {
     setUserInfoBySubject(userInfoBySubjectMap);
 
     reset({ name: "", subjectName: "", kakaoId: "", description: "" });
+    Toast({
+      title: "登録に成功しました！",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    })
     onClose();
   };
 
@@ -231,6 +239,7 @@ export const Contributors = () => {
                 </FormLabel>
                 <Input
                   id="name"
+                  data-testid="name-input"
                   placeholder="お名前を入力してください。"
                   {...register("name", {
                     required: "⚠️お名前は必須入力項目です。",
@@ -250,6 +259,7 @@ export const Contributors = () => {
                 <Input
                   id="kakaoId"
                   placeholder="カカオIDを入力してください。"
+                  data-testid="kakaoId-input"
                   {...register("kakaoId", {
                     required: "⚠️カカオIDは必須入力項目です。",
                   })}
@@ -268,6 +278,7 @@ export const Contributors = () => {
                 <Select
                   id="subject-name"
                   variant="outline"
+                  data-testid="subjectName-input"
                   placeholder="科目を選んでください"
                   {...register("subjectName", {
                     required: "⚠️科目は必須入力項目です。",
@@ -303,6 +314,7 @@ export const Contributors = () => {
                 w="100%"
                 mt="20px"
                 mb="10px"
+                data-testid="kakomon-register-button"
               >
                 登録する
               </Button>
@@ -323,6 +335,7 @@ export const Contributors = () => {
               color="blackAlpha.700"
               letterSpacing="wide"
               fontWeight="bold"
+              data-testid="kakomon-register-title"
             >
               過去問登録ページ
             </Heading>
@@ -337,6 +350,16 @@ export const Contributors = () => {
             />
           </Box>
 
+          <Text
+            fontSize="sm"
+            textAlign="center"
+            fontWeight="semibold"
+            mb="5px"
+            fontStyle="italic"
+          >
+            ここでは試験や課題の過去問を登録し閲覧できます。
+          </Text>
+
           <Button
             bgColor="blackAlpha.700"
             color="white"
@@ -344,7 +367,7 @@ export const Contributors = () => {
             mb="30px"
             borderRadius="full"
             onClick={onOpen}
-            data-testid="kakomon-register-title"
+            data-testid="kakomon-register-modal"
             _hover={{
               bgColor: "white",
               color: "blackAlpha.700",

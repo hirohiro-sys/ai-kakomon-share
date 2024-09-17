@@ -30,6 +30,7 @@ import {
   Flex,
   Text,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Post, Comment } from "../domain/kakomon-share";
@@ -59,6 +60,7 @@ export const CreatePost = () => {
 
   const addPostModal = useDisclosure();
   const chatModal = useDisclosure();
+  const Toast = useToast();
 
   const {
     register,
@@ -73,6 +75,12 @@ export const CreatePost = () => {
     const newKakomonPosts = await getKakomonPosts();
     setKakomonPosts(newKakomonPosts);
     reset({ title: "", name: "", description: "" });
+    Toast({
+      title: "投稿に成功しました！",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
     addPostModal.onClose();
   };
   // 過去問の募集投稿の内容を取得し、掲示板のモーダルを開く関数
@@ -188,7 +196,7 @@ export const CreatePost = () => {
       </Modal>
 
       {/* chatのモーダル */}
-      <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose} data-testid="detail-modal">
+      <Modal isOpen={chatModal.isOpen} onClose={chatModal.onClose}>
         <ModalOverlay />
         <ModalContent maxW="700px">
           <ModalCloseButton />
@@ -261,6 +269,7 @@ export const CreatePost = () => {
                         onChange={(e) => setCommentName(e.target.value)}
                         width="91.5%"
                         mb="3"
+                        data-testid="comment-name-input"
                       />
                       <Flex align="center" gap="2">
                         <Textarea
@@ -270,6 +279,7 @@ export const CreatePost = () => {
                           onChange={(e) => setCommentText(e.target.value)}
                           flex="1"
                           height="40px"
+                          data-testid="comment-input"
                         />
                         <Button
                           colorScheme="teal"
@@ -316,6 +326,18 @@ export const CreatePost = () => {
             />
           </Box>
 
+          <Text
+            fontSize="sm"
+            textAlign="center"
+            fontWeight="semibold"
+            mb="5px"
+            fontStyle="italic"
+          >
+            ここでは試験や課題の過去問を募集できます。
+            <br />
+            他にも情報共有や質問など掲示板としてもご活用ください。
+          </Text>
+
           <Button
             bgColor="blackAlpha.700"
             color="white"
@@ -344,14 +366,14 @@ export const CreatePost = () => {
         </Box>
       ) : (
         <TableContainer data-testid="record-list">
-          <Table variant="simple" size="sm" colorScheme="blackAlpha">
+          <Table variant="simple" size="sm" colorScheme="purple">
             <Thead>
               <Tr>
                 <Th fontWeight="bold" fontSize="lg">
                   タイトル
                 </Th>
                 <Th fontWeight="bold" fontSize="lg">
-                  カカオID又はニックネーム
+                  ニックネーム又はカカオID
                 </Th>
                 <Th fontWeight="bold" fontSize="lg">
                   過去問詳細
