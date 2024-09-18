@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { CreatePost } from "../components/CreatePost";
 import { ChakraProvider } from "@chakra-ui/react";
 import userEvent from "@testing-library/user-event";
+import { act } from "react";
 
 const initialMockData = [
   {
@@ -71,52 +72,71 @@ jest.mock("../lib/supabasefunctions", () => {
 });
 
 describe("過去問の募集投稿ページのテスト", () => {
-  beforeEach(() => {
-    render(
-      <ChakraProvider>
-        <CreatePost />
-      </ChakraProvider>
-    );
+  beforeEach(async () => {
+    await act(async () => {
+      render(
+        <ChakraProvider>
+          <CreatePost />
+        </ChakraProvider>
+      );
+    });
   });
+
   test("タイトルが見れる", () => {
     expect(screen.getByTestId("kakomon-post-title")).toBeInTheDocument();
   });
 
   test("フォームのバリデーションが機能する", async () => {
     const postButton = screen.getByTestId("kakomon-post-modal");
-    postButton.click();
+    
+    await act(async () => {
+      postButton.click();
+    });
+
     const submitButton = await screen.findByTestId("kakomon-post-button");
-    submitButton.click();
-    expect(
-      await screen.findByText("⚠️タイトルは必須入力項目です。")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("⚠️お名前は必須入力項目です。")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("⚠️過去問詳細は必須入力項目です。")
-    ).toBeInTheDocument();
+    
+    await act(async () => {
+      submitButton.click();
+    });
+
+    expect(await screen.findByText("⚠️タイトルは必須入力項目です。")).toBeInTheDocument();
+    expect(await screen.findByText("⚠️お名前は必須入力項目です。")).toBeInTheDocument();
+    expect(await screen.findByText("⚠️過去問詳細は必須入力項目です。")).toBeInTheDocument();
   });
 
   test("過去問の募集投稿をするとレコードが1つ増える", async () => {
-    // 1回目のmockResolvedValueOnce
     await waitFor(() => {
       const recordList = screen.getByTestId("record-list");
       expect(recordList).toBeInTheDocument();
       const rows = recordList.querySelectorAll("tr");
       expect(rows.length - 1).toBe(1);
     });
-    // 過去問の募集投稿をする
+
     const postButton = screen.getByTestId("kakomon-post-modal");
-    postButton.click();
+    
+    await act(async () => {
+      postButton.click();
+    });
+
     const titleInput = await screen.findByTestId("title-input");
-    await userEvent.type(titleInput, "test");
+    await act(async () => {
+      await userEvent.type(titleInput, "test");
+    });
+
     const nameInput = screen.getByTestId("name-input");
-    await userEvent.type(nameInput, "テスト太郎");
+    await act(async () => {
+      await userEvent.type(nameInput, "テスト太郎");
+    });
+
     const descriptionInput = screen.getByTestId("description-input");
-    await userEvent.type(descriptionInput, "これはテストです。");
-    userEvent.click(screen.getByTestId("kakomon-post-button"));
-    // 2回目のmockResolvedValueOnce
+    await act(async () => {
+      await userEvent.type(descriptionInput, "これはテストです。");
+    });
+
+    await act(async () => {
+      userEvent.click(screen.getByTestId("kakomon-post-button"));
+    });
+
     await waitFor(() => {
       const recordList = screen.getByTestId("record-list");
       expect(recordList).toBeInTheDocument();

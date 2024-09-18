@@ -1,6 +1,7 @@
 import { render,screen} from "@testing-library/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Contributors } from "../components/Contributors";
+import { act } from "react";
 
 
 jest.mock("firebase/app", () => ({
@@ -27,9 +28,17 @@ describe("過去問の募集投稿ページのテスト", () => {
 
   test("バリデーションエラーが表示される", async () => {
     const postButton = screen.getByTestId("kakomon-register-modal");
-    postButton.click();
+    
+    await act(async () => {
+      postButton.click();
+    });
+  
     const submitButton = await screen.findByTestId("kakomon-register-button");
-    submitButton.click();
+    
+    await act(async () => {
+      submitButton.click();
+    });
+  
     expect(
       await screen.findByText("⚠️お名前は必須入力項目です。")
     ).toBeInTheDocument();
