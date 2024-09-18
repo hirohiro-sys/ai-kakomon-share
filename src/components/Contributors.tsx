@@ -357,7 +357,7 @@ export const Contributors = () => {
             mb="5px"
             fontStyle="italic"
           >
-            ここでは試験や課題の過去問を登録し閲覧できます。
+            ここでは試験や課題の過去問を登録したり閲覧できます。
           </Text>
 
           <Button
