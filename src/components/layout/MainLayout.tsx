@@ -44,7 +44,7 @@ const LinkItems: Array<LinkItemProps> = [
 export default function SimpleSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const [selectedPath, setSelectedPath] = useState("/");
+  const [selectedPath, setSelectedPath] = useState("");
   const bg = useColorModeValue("gray.100", "gray.900");
   const sidebarBg = useColorModeValue("white", "gray.900");
   const borderColor = useColorModeValue("gray.200", "gray.700");

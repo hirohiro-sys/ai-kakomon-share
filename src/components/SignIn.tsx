@@ -71,6 +71,7 @@ export const SignIn = () => {
               fontSize="20px"
               p="25px"
               border="1px"
+              borderColor="gray.400"
             >
               <FcGoogle size="30px" style={{ marginRight: "8px" }} />
               Googleでログイン
@@ -80,6 +81,7 @@ export const SignIn = () => {
               fontSize="20px"
               p="25px"
               border="1px"
+              borderColor="gray.400"
             >
               <FaGithub size="30px" style={{ marginRight: "8px" }} />
               Githubでログイン

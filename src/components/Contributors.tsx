@@ -392,7 +392,7 @@ export const Contributors = () => {
             <TabPanel key={year}>
               <Accordion allowMultiple>
                 {getSubjectsByGrade(year).map((subject) => (
-                  <AccordionItem key={subject.id}>
+                  <AccordionItem key={subject.id} data-testid="accordion-button">
                     <AccordionButton>
                       <Box
                         as="span"
@@ -402,10 +402,10 @@ export const Contributors = () => {
                       >
                         {subject.name}
                       </Box>
-                      <AccordionIcon />
+                      <AccordionIcon/>
                     </AccordionButton>
                     <AccordionPanel pb={4}>
-                      <TableContainer>
+                      <TableContainer data-testid="record-list">
                         <Table size="sm">
                           {userInfoBySubject[subject.id]?.length ? (
                             <>

@@ -215,7 +215,7 @@ export const CreatePost = () => {
                   </Box>
                 </Box>
                 <Box>
-                  <Heading size="sm" mb="3">
+                  <Heading size="sm" mb="3" data-testid="comment-header">
                     コメント一覧
                   </Heading>
                   <List spacing={4} mb="4">
@@ -232,6 +232,7 @@ export const CreatePost = () => {
                           borderRadius="md"
                           bg="gray.50"
                           boxShadow="md"
+                          data-testid="comment-item"
                         >
                           <Text fontWeight="bold">{comment.comment}</Text>
                           <Text fontSize="sm" color="gray.500" mt="1">
