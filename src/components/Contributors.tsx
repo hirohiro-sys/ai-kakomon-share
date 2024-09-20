@@ -95,6 +95,7 @@ export const Contributors = () => {
         {...getEditButtonProps()}
         colorScheme="teal"
         ml="20px"
+        data-testid="edit-button"
       >
         <FaPenToSquare />
       </Button>
@@ -124,6 +125,7 @@ export const Contributors = () => {
           return { subjectId: subject.id, userInfos };
         })
       );
+      // console.log("flatする前の科目別ユーザー情報", userInfosBySubject);
 
       const userInfoBySubjectMap = userInfosBySubject.reduce(
         (acc, { subjectId, userInfos }) => {
@@ -132,7 +134,8 @@ export const Contributors = () => {
         },
         {} as Record<string, User[]>
       );
-
+      // console.log("各科目に登録されているユーザー情報", userInfoBySubjectMap);
+      
       setUserInfoBySubject(userInfoBySubjectMap);
     };
     fetchSubjectsData();
@@ -196,7 +199,7 @@ export const Contributors = () => {
     onClose();
   };
 
-  // ユーザーの備考欄を更新する関数
+  // 投稿者本人だけが補足情報を編集できるようにする関数(firebase authのuidを使って判定)
   const handleDescriptionChange = async (
     userId: number,
     newDescription: string
@@ -204,6 +207,7 @@ export const Contributors = () => {
     await updateUserInfo(userId, newDescription);
     const updatedSubjects = await getSubjects();
     setSubjects(updatedSubjects);
+    // ここから下はいるかどうか謎だが現状スルーしている。あとで検証(ないとリロードしないと変更が反映されない?)
     const userInfosBySubject = await Promise.all(
       updatedSubjects.map(async (subject) => {
         const userInfos = await fetchUserInfoBySubjectId(subject.id);
@@ -392,13 +396,14 @@ export const Contributors = () => {
             <TabPanel key={year}>
               <Accordion allowMultiple>
                 {getSubjectsByGrade(year).map((subject) => (
-                  <AccordionItem key={subject.id} data-testid="accordion-button">
+                  <AccordionItem key={subject.id}>
                     <AccordionButton>
                       <Box
-                        as="span"
+                        // as="span"
                         flex="1"
                         textAlign="left"
                         fontWeight="bold"
+                        data-testid="accordion-button"
                       >
                         {subject.name}
                       </Box>
@@ -458,7 +463,7 @@ export const Contributors = () => {
                               </Tbody>
                             </>
                           ) : (
-                            // table内でTextのみを使うとコンソールで警告が出る
+                            // table内でText(pタグ)を使うとコンソールで警告が出る
                             <Tbody>
                               <Tr>
                                 <Td colSpan={1}>ユーザー情報がありません。</Td>

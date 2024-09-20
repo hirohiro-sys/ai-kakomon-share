@@ -27,32 +27,6 @@ const addMockData = [
   },
 ];
 
-// const initialMockDataComment = [
-//   {
-//     id: 1,
-//     title: "test",
-//     name: "テスト太郎",
-//     comment: "これはテストです(コメント版)。",
-//     created_at: "2021-10-01T00:00:00.000Z",
-//   },
-// ];
-// const addMockDataComment = [
-//   {
-//     id: 1,
-//     title: "test",
-//     name: "テスト太郎",
-//     comment: "これはテストです(コメント版)。",
-//     created_at: "2021-10-01T00:00:00.000Z",
-//   },
-//   {
-//     id: 2,
-//     title: "test",
-//     name: "テスト二郎",
-//     comment: "これはテストです2(コメント版)。",
-//     created_at: "2021-10-01T00:00:00.000Z",
-//   },
-// ];
-
 const mockGetKakomonPosts = jest
   .fn()
   .mockResolvedValueOnce(initialMockData)
@@ -60,17 +34,11 @@ const mockGetKakomonPosts = jest
   .mockResolvedValueOnce(initialMockData)
   .mockResolvedValue(addMockData);
 
-// const mockGetKakomonPostComments = jest
-//   .fn()
-//   .mockResolvedValueOnce(initialMockDataComment)
-//   .mockResolvedValue(addMockDataComment);
 
 jest.mock("../lib/supabasefunctions", () => {
   return {
     getKakomonPosts: () => mockGetKakomonPosts(),
     addKakomonPost: jest.fn(),
-    // getKakomonPostComments: () => mockGetKakomonPostComments(),
-    // addKakomonPostComment: jest.fn(),
   };
 });
 
@@ -148,19 +116,4 @@ describe("過去問の募集投稿ページのテスト", () => {
       expect(rows.length - 1).toBe(2);
     });
   });
-  // test("コメントを追加するとコメント一覧が更新される", async () => {
-  //   await waitFor(() => {
-  //     const recordList = screen.getByTestId("record-list");
-  //     expect(recordList).toBeInTheDocument();
-  //   });
-
-  //   const detailButton = screen.getAllByTestId("detail-modal-button")[0];
-  //   await act(async () => {
-  //     detailButton.click();
-  //   });
-
-  //   await waitFor(() => {
-  //     expect(screen.getByTestId("detail-modal")).toBeInTheDocument();
-  //   });
-  // });
 });

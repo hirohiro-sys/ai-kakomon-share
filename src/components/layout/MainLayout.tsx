@@ -177,6 +177,7 @@ const SidebarContent = ({
         color="red.400"
         bgColor="white"
         border="2px"
+        data-testid="signout-modal-button"
       >
         サインアウト
         <FaSignOutAlt />
@@ -202,6 +203,7 @@ const SidebarContent = ({
                   onDialogClose();
                 }}
                 mr="3"
+                data-testid="signout-button"
               >
                 サインアウト
               </Button>
