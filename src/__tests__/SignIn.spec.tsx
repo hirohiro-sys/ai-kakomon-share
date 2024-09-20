@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SignIn } from "../components/SignIn"; // SignInコンポーネントのパスを指定
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, signOut } from "firebase/auth";
 import { MemoryRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import SimpleSidebar from "../components/layout/MainLayout";
@@ -9,8 +9,9 @@ import SimpleSidebar from "../components/layout/MainLayout";
 jest.mock("firebase/auth", () => ({
   ...jest.requireActual("firebase/auth"),
   signInWithPopup: jest.fn(),
-  signOut: jest.fn(() => Promise.resolve()),
+  signOut: jest.fn(() => Promise.resolve()), // signOutもモック化
 }));
+
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -61,15 +62,20 @@ describe("認証周りのテスト", () => {
         </ChakraProvider>
       </MemoryRouter>
     );
+    
     const signOutButton = screen.getByTestId("signout-modal-button");
     fireEvent.click(signOutButton);
+    
     await waitFor(() => {
       expect(screen.getByTestId("signout-button")).toBeInTheDocument();
     });
-    const signOut = screen.getByTestId("signout-button");
-    fireEvent.click(signOut);
+    
+    const confirmButton = screen.getByTestId("signout-button");
+    fireEvent.click(confirmButton);
+    
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/signin");
+      expect(signOut).toHaveBeenCalled(); // signOutが呼ばれたか確認
+      expect(mockNavigate).toHaveBeenCalledWith("/signin"); // リダイレクト先の確認
     });
   });
 });
