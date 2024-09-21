@@ -418,7 +418,7 @@ export const CreatePost = () => {
         mt="auto"
       >
         <Text mb="2">
-          <i>© AIソフトウェア学部 過去問募集ページ</i>
+          <i>© KakomonShare 過去問募集ページ</i>
         </Text>
       </Box>
     </>

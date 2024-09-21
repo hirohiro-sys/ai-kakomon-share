@@ -491,7 +491,7 @@ export const Contributors = () => {
         mt="auto"
       >
         <Text mb="2">
-          <i>© AIソフトウェア学部 過去問一覧ページ</i>
+          <i>© KakomonShare 過去問一覧ページ</i>
         </Text>
       </Box>
     </>
