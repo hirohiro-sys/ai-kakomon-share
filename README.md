@@ -1,9 +1,8 @@
 # KakomonShare
 学部内で定期試験や課題の過去問を共有し合えるアプリケーションです。詳しい説明は以下のQiita記事で投稿しています。
 
-<a href="https://qiita.com/bisketoriba/items/94d84d296b22b5ebd33d" target="_blank" rel="noopener noreferrer">【Qiita記事】</a>
 
-
+【Qiita記事】 https://qiita.com/bisketoriba/items/94d84d296b22b5ebd33d
 
 <img src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3279945/bf87f3c7-64f6-d373-38c6-a3d73c3b4b01.png" width="80%">
 
