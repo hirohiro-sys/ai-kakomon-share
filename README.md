@@ -1,7 +1,10 @@
 # KakomonShare
 学部内で定期試験や課題の過去問を共有し合えるアプリケーションです。詳しい説明は以下のQiita記事で投稿しています。
 
-TODO: ここにQiitaのURLとアプリのモック画像を貼る
+【Qiita】 https://qiita.com/bisketoriba/items/94d84d296b22b5ebd33d
+
+
+<img src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3279945/bf87f3c7-64f6-d373-38c6-a3d73c3b4b01.png" width="80%">
 
 # 環境設定
 プロジェクトのルートディレクトリに .env ファイルを作成し、以下のように環境変数を設定します。
