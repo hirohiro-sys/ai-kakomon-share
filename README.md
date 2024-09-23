@@ -1,50 +1,29 @@
-# React + TypeScript + Vite
+# KakomonShare
+学部内で定期試験や課題の過去問を共有し合えるアプリケーションです。詳しい説明は以下のQiita記事で投稿しています。
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TODO: ここにQiitaのURLとアプリのモック画像を貼る
 
-Currently, two official plugins are available:
+# 環境設定
+プロジェクトのルートディレクトリに .env ファイルを作成し、以下のように環境変数を設定します。
+```.env
+// firebaseの環境変数
+VITE_REACT_APP_FIREBASE_API_KEY="XXXXX"
+VITE_REACT_APP_FIREBASE_AUTH_DOMAIN="XXXXX"
+VITE_REACT_APP_FIREBASE_PROJECT_ID="XXXXX"
+VITE_REACT_APP_FIREBASE_STORAGE_BUCKET="XXXXX"
+VITE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID="XXXXX"
+VITE_REACT_APP_FIREBASE_APP_ID="XXXXX"
+VITE_REACT_APP_FIREBASE_MEASUREMENT_ID="XXXXX"
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+// supabaseの環境変数
+VITE_SUPABASE_URL=https://your-supabase-url.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-api-key
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+# 起動方法
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```
+git clone https://github.com/hirohiro-sys/ai-kakomon-share.git
+npm i
+npm run dev
 ```
