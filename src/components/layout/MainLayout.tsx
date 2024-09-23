@@ -89,7 +89,7 @@ export default function SimpleSidebar() {
             borderColor={mobileBorderColor}
           />
           <Box ml={{ base: 0 }} p="4">
-            {/* ここで各コンポーネントの中身を表示 */}
+            {/* ここで各コンポーネントの中身を表示(もしかしてここでコンポーネントをmapして表示させるのが正解？) */}
           </Box>
         </>
       

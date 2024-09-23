@@ -399,7 +399,6 @@ export const Contributors = () => {
                   <AccordionItem key={subject.id}>
                     <AccordionButton>
                       <Box
-                        // as="span"
                         flex="1"
                         textAlign="left"
                         fontWeight="bold"

@@ -7,9 +7,10 @@ import SimpleSidebar from "../components/layout/MainLayout";
 
 // signInWithPopupをモック化
 jest.mock("firebase/auth", () => ({
+  // requireActualで特定のモジュールだけをモック化する場合は、jest.requireActualを使うらしい
   ...jest.requireActual("firebase/auth"),
   signInWithPopup: jest.fn(),
-  signOut: jest.fn(() => Promise.resolve()), // signOutもモック化
+  signOut: jest.fn(() => Promise.resolve()),
 }));
 
 const mockNavigate = jest.fn();
@@ -21,6 +22,7 @@ jest.mock("react-router-dom", () => ({
 describe("認証周りのテスト", () => {
 
   test("Googleでログインする際に関数が正常に実行されるか", async () => {
+    // テスト内でmockResolvedValueOnceのようなモック特有のメソッドを使う場合は明示的にas jest.Mockという型を指定する必要がある
     const mockSignInWithPopup = signInWithPopup as jest.Mock;
     mockSignInWithPopup.mockResolvedValueOnce({ user: { uid: "123" } });
     render(
@@ -74,8 +76,8 @@ describe("認証周りのテスト", () => {
     fireEvent.click(confirmButton);
     
     await waitFor(() => {
-      expect(signOut).toHaveBeenCalled(); // signOutが呼ばれたか確認
-      expect(mockNavigate).toHaveBeenCalledWith("/signin"); // リダイレクト先の確認
+      expect(signOut).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith("/signin");
     });
   });
 });

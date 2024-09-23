@@ -20,7 +20,7 @@ export const DetailApp = () => {
     <>
       <Center>
         <Stack>
-        <Box position="relative" padding="1rem .5rem" mb={5}>
+          <Box position="relative" padding="1rem .5rem" mb={5}>
             <Heading
               fontFamily="serif"
               fontSize="50px"
@@ -99,12 +99,22 @@ export const DetailApp = () => {
       </Text>
       <Divider mt="10px" borderColor="gray.400" />
       <Flex mt="20px">
-      <Badge colorScheme="red" fontSize='1.5em' mr="10px" borderRadius="md">新着</Badge>
-      <Text fontSize="1.5em">【2024/09/14】 デモ実装完了🎉</Text>
+        <Badge fontSize="1.5em" mr="10px" variant="solid" borderRadius="md" colorScheme="red">
+          新着
+        </Badge>
+        <Text fontSize="1.5em">【2024/09/23】KakomonShareに関する記事をQiitaに投稿しました！</Text>
       </Flex>
       <Flex mt="20px">
-      <Badge  fontSize='1.5em' mr="10px" variant="solid" borderRadius="md">お知らせ</Badge>
-      <Text fontSize="1.5em">【2024/09/01】 KakomonShare実装着手💪</Text>
+        <Badge fontSize="1.5em" mr="10px" variant="solid" borderRadius="md">
+          お知らせ
+        </Badge>
+        <Text fontSize="1.5em">【2024/09/14】 デモ実装完了🎉</Text>
+      </Flex>
+      <Flex mt="20px">
+        <Badge fontSize="1.5em" mr="10px" variant="solid" borderRadius="md">
+          お知らせ
+        </Badge>
+        <Text fontSize="1.5em">【2024/09/01】 KakomonShare実装着手💪</Text>
       </Flex>
     </>
   );

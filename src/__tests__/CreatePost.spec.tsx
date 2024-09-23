@@ -35,9 +35,11 @@ const mockGetKakomonPosts = jest
   .mockResolvedValue(addMockData);
 
 
+// パスのモジュールを全てモック化
 jest.mock("../lib/supabasefunctions", () => {
   return {
     getKakomonPosts: () => mockGetKakomonPosts(),
+    // 全てモック化した場合はデフォルトでjest.fn()を返すらしいが明示的に指定することで可読性が上がる
     addKakomonPost: jest.fn(),
   };
 });
